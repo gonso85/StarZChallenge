@@ -2,9 +2,9 @@
 
 This challenge is based on the TAL example application. To test it you must do the following steps:
 
-git clone https://github.com/gonso85/StarZChallenge.git <folder>
+git clone https://github.com/gonso85/StarZChallenge.git "folder_name"
 
-cd <folder>
+cd "folder_name"
 
 npm install
 

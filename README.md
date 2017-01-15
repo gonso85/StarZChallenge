@@ -1,8 +1,10 @@
 # StarZChallenge
 
-git clone https://github.com/gonso85/StarZChallenge.git gonchallenge
+This challenge is based on the TAL example application. To test it you must do the following steps:
 
-cd gonchallenge
+git clone https://github.com/gonso85/StarZChallenge.git <folder>
+
+cd <folder>
 
 npm install
 

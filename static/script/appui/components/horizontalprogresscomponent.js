@@ -22,7 +22,7 @@
  * Please contact us for an alternative licence
  */
 
-require.def("sampleapp/appui/components/horizontalprogresscomponent",
+require.def("starz/appui/components/horizontalprogresscomponent",
     [
         "antie/widgets/component",
         "antie/widgets/horizontalprogress",

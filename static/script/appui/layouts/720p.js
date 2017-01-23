@@ -22,13 +22,13 @@
  * Please contact us for an alternative licence
  */
 
-require.def('sampleapp/appui/layouts/720p',
+require.def('starz/appui/layouts/720p',
     {
         classes: [
             "layout720p"
         ],
         css: [
-            "layouts/720p.css"
+            // "layouts/720p.css"
         ],
         requiredScreenSize: {
             width: 1280,

@@ -22,7 +22,7 @@
  * Please contact us for an alternative licence
  */
 
-require.def("sampleapp/appui/components/simple",
+require.def("starz/appui/components/simple",
     [
         "antie/widgets/component",
         "antie/widgets/button",
@@ -30,8 +30,8 @@ require.def("sampleapp/appui/components/simple",
         "antie/widgets/verticallist",
         "antie/widgets/carousel",
         "antie/datasource",
-        "sampleapp/appui/formatters/simpleformatter",
-        "sampleapp/appui/datasources/simplefeed"
+        "starz/appui/formatters/simpleformatter",
+        "starz/appui/datasources/simplefeed"
     ],
     function (Component, Button, Label, VerticalList, Carousel, DataSource, SimpleFormatter, SimpleFeed) {
 
@@ -55,14 +55,14 @@ require.def("sampleapp/appui/components/simple",
 
                 var playerButton = new Button();
                 playerButton.addEventListener("select", function(evt){
-                    self.getCurrentApplication().pushComponent("maincontainer", "sampleapp/appui/components/simplevideocomponent");
+                    self.getCurrentApplication().pushComponent("maincontainer", "starz/appui/components/simplevideocomponent");
                 });
                 playerButton.appendChildWidget(new Label("Simple Video Player Example"));
 
                 var horizontalProgressButton = new Button();
                 horizontalProgressButton.appendChildWidget(new Label("Horizontal Progress Bar Example"));
                 horizontalProgressButton.addEventListener("select", function(evt) {
-                    self.getCurrentApplication().pushComponent("maincontainer", "sampleapp/appui/components/horizontalprogresscomponent");
+                    self.getCurrentApplication().pushComponent("maincontainer", "starz/appui/components/horizontalprogresscomponent");
                 });
 
                 // Create a vertical list and append the buttons to navigate within the list
@@ -91,7 +91,7 @@ require.def("sampleapp/appui/components/simple",
                 function carouselExampleSelected() {
                     self.getCurrentApplication().pushComponent(
                         "maincontainer",
-                        "sampleapp/appui/components/carouselcomponent",
+                        "starz/appui/components/carouselcomponent",
                         self._getCarouselConfig()
                     );
                 }

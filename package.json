@@ -1,7 +1,7 @@
 {
-  "name": "talexample",
-  "version": "0.2.0",
-  "description": "Example application for the TAL framwork.",
+  "name": "StarzChallenge",
+  "version": "0.1.0",
+  "description": "Starz challenge of Gonzalo",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -9,21 +9,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/fmtvp/talexample.git"
+    "url": "git://github.com/gonso85/StarZChallenge"
   },
   "keywords": [
     "tal",
-    "talframework",
-    "bbc"
+    "talframework"
   ],
-  "author": "BBC Future Media",
+  "author": "Gonzalo Lopez",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/fmtvp/talexample/issues"
+    "url": ""
   },
   "dependencies": {
     "tal": "fmtvp/tal",
     "express": "^4.13.4",
-    "mustache-express": "^1.2.2"
+    "mustache-express": "^1.2.2",
+    "express-less": "latest",
+    "less-middleware": "latest"
   }
 }

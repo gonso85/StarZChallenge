@@ -1,4 +1,22 @@
 #detailComponent {
+    &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.2;
+        background: url('../img/background.png') no-repeat;
+
+        -ms-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+
     .view {
         position: relative;
 
@@ -44,12 +62,14 @@
                         border-color: @radio-button-selected-bg-color;
                         background: @radio-button-selected-bg-color;
                         color: black;
+                        font-weight: bold;
                     }
 
                     &.focus {
                         border-color: @radio-button-focused-bg-color;
                         background: @radio-button-focused-bg-color;
                         color: black;
+                        font-weight: none;
                     }
                 }
             }

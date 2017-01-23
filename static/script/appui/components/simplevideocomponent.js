@@ -22,7 +22,7 @@
  * Please contact us for an alternative licence
  */
 
-require.def("sampleapp/appui/components/simplevideocomponent",
+require.def("starz/appui/components/simplevideocomponent",
     [
         "antie/widgets/component",
         "antie/widgets/button",

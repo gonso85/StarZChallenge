@@ -1,0 +1,171 @@
+#detailComponent {
+    .view {
+        position: relative;
+
+        .top {
+            height: 150px;
+            margin-top: @top-edge-margin;
+            margin-left: @side-edge-margin;
+            white-space: nowrap;
+
+            img {
+                vertical-align: middle;
+                width: 100%;
+            }
+
+            .logo {
+                display: inline-block;
+                width: 200px;
+                margin-right: @top-edge-margin;
+            }
+
+            .banner {
+                display: inline-block;
+            }
+        }
+
+        .content {
+            position: relative;
+            top: 50px;
+            height: 300px;
+            margin-left: @side-edge-margin;
+
+            .language.radio-buttons {
+                float: left;
+
+                .radio {
+                    display: inline-block;
+                    padding: 15px 25px;
+                    background: transparent;
+                    border: 2px solid white;
+                    color: white;
+
+                    &.selected {
+                        border-color: @radio-button-selected-bg-color;
+                        background: @radio-button-selected-bg-color;
+                        color: black;
+                    }
+
+                    &.focus {
+                        border-color: @radio-button-focused-bg-color;
+                        background: @radio-button-focused-bg-color;
+                        color: black;
+                    }
+                }
+            }
+
+            .movie {
+                float: left;
+                width: 80%;
+
+                .poster {
+                    float: left;
+                    width: 225px;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+
+                .info {
+                    max-width: 700px;
+                    float: left;
+                    color: white;
+                    margin-left: 30px;
+
+                    .info-row {
+                        margin-bottom: 15px;
+
+                        .title {
+                            font-size: 28px;
+                            font-weight: bold;
+                        }
+
+                        .plot {
+                            font-size: 20px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .button.play {
+            position: relative;
+            margin: auto;
+            width: 200px;
+            color: white;
+            background: transparent;
+            border: 2px solid white;
+            padding: 15px 30px;
+            text-align: center;
+
+            &.focus {
+                border-color: @radio-button-focused-bg-color;
+                background: @radio-button-focused-bg-color;
+                color: black;
+                font-weight: bold;
+            }
+        }
+
+        .player-wrapper {
+            position: relative;
+            margin-top: 30px;
+
+            .video-container {
+                text-align: center;
+                position: relative;
+
+                video.player {
+                    display: block;
+                    margin: auto;
+                    width: 900px;
+                    height: 510px;
+                }
+
+                // BONUS 6: Subtitles top right
+                .subtitles {
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    margin: 0 auto;
+
+                    > div {
+                        right: 0 !important;
+                    }
+
+                    div, span {
+                        width: 100% !important;
+                    }
+
+                    span {
+                        display: block !important;
+                        text-align: right !important;
+                    }
+                }
+            }
+
+            .button-bar {
+                text-align: center;
+                margin-top: 30px;
+
+                .binary.button {
+                    display: inline-block;
+                    padding: 15px 30px;
+
+                    .state {
+                        margin-left: 10px;
+                    }
+
+                    &.subtitles {
+                        width: 100px;
+                    }
+                }
+            }
+        }
+
+        .arabic {
+            text-align: right;
+        }
+    }
+}

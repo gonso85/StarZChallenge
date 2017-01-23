@@ -208,12 +208,17 @@ define('starz/appui/views/detail',
              */
             _createButtonBar: function () {
                 var bar = new HorizontalList(),
-                    button = new BinaryButton('subtitleBtn', 'Subtitles', false);
+                    stop = new Button('stopBtn'),
+                    subtitles = new BinaryButton('subtitleBtn', 'Subtitles', false);
 
-                button.addClass('subtitles');
-
+                subtitles.addClass('subtitles');
+                stop.addClass('stop');
                 bar.addClass('button-bar');
-                bar.appendChildWidget(button);
+
+                stop.appendChildWidget(new Label('STOP'));
+
+                bar.appendChildWidget(subtitles);
+                bar.appendChildWidget(stop);
 
                 return bar;
             },
@@ -227,8 +232,10 @@ define('starz/appui/views/detail',
             _toggleDetailVisibility: function (show) {
                 if (show) {
                     this._center.removeClass('visibility-hidden');
+                    this._playBtn.removeClass('visibility-hidden');
                 } else {
                     this._center.addClass('visibility-hidden');
+                    this._playBtn.addClass('visibility-hidden');
                 }
             },
 

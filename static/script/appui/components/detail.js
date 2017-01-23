@@ -38,6 +38,9 @@ require.def('starz/appui/components/detail',
                 // Create dash player
                 this._player = dashjs.MediaPlayer().create();
 
+                // Init the player (first of all)
+                this._player.initialize();
+
                 // Disable player logger
                 this._player.getDebug().setLogToBrowserConsole(false);
 
@@ -71,7 +74,7 @@ require.def('starz/appui/components/detail',
 
                   if (params.language) {
 
-                    // Update text
+                    // TODO Update text
 
                 } else {
                     this._view.getLanguageSwitcher().setSelectedButton('english');
@@ -88,6 +91,7 @@ require.def('starz/appui/components/detail',
              */
             _onBeforeShow: function () {
                 var url = 'http://www.omdbapi.com/?t=Elephants+Dream&r=json',
+                    videoContainer = this._view.getVideoWrapper(),
                     error;
 
                 // Focus the play button
@@ -98,6 +102,12 @@ require.def('starz/appui/components/detail',
 
                 // Hide player section
                 this._view._togglePlayerWrapper(false);
+
+                // Append the player
+                this._appendVideoPlayer(videoContainer);
+
+                // Set up the player
+                this._prepareVideoPlayer();
 
                 // Hide error panel
                 error = this._view.getErrorLabel();
@@ -131,21 +141,12 @@ require.def('starz/appui/components/detail',
              */
             _onSelect: function (evt) {
                 var button = evt.target,
-                    playerSection = this._view.getPlayerSection(),
-                    videoContainer = this._view.getVideoWrapper();
+                    playerSection = this._view.getPlayerSection();
 
                 if (button.id === 'play') {
 
-                    // Append the player
-                    this._appendVideoPlayer(videoContainer);
-
                     // Show player section
                     this._view._togglePlayerWrapper(true);
-
-                    // Set up the player
-                    this._initVideoPlayer();
-
-                    this._view._toggleDetailVisibility(false);
 
                     // Show the player and begin playback
                     this.move(playerSection.outputElement, this._onCompleteMoveBound);
@@ -162,7 +163,25 @@ require.def('starz/appui/components/detail',
                     } else {
                         this._player.setTextTrack(-1);
                     }
-                } else {
+                } else if (button.id === 'stopBtn') {
+
+                    // Show detail section and hide player
+                    this._view._toggleDetailVisibility(true);
+                    this._view._togglePlayerWrapper(false);
+
+                    // Reset the player
+                    this._player.attachSource(DASH_SRC);
+
+                    this._view.moveTo({
+                        el: this._view.outputElement,
+                        to: {
+                            top: 0
+                        }
+                    });
+                    this._top = 0;
+
+                    this._view.getPlayButton().focus();
+                } else{
 
                     // TODO Change language if different
                 }
@@ -209,6 +228,9 @@ require.def('starz/appui/components/detail',
              */
             _onCompleteMove: function () {
 
+                // Hide detail section
+                this._view._toggleDetailVisibility(false);
+
                 // Begin playback
                 this._player.play();
 
@@ -228,8 +250,8 @@ require.def('starz/appui/components/detail',
                     subsEl;
 
                 if (playerEl && !playerEl.children.length) {
-                    videoEl = device._createElement('video', 'videoPlayer', ['player']);
-                    videoEl.setAttribute('controls', true);
+                    videoEl = this._videoTag = device._createElement('video', 'videoPlayer', ['player']);
+                    // videoEl.setAttribute('controls', true);
                     device.appendChildElement(container.outputElement, videoEl);
 
                     // container.appendChildWidget(new Container('subtitles'));
@@ -243,15 +265,16 @@ require.def('starz/appui/components/detail',
              *
              * @private
              */
-            _initVideoPlayer: function () {
-                var videoTag = document.querySelector("#videoPlayer");
+            _prepareVideoPlayer: function () {
 
-                // Init the player (first of all)
-                this._player.initialize(videoTag, DASH_SRC, false);
+                this._player.attachSource(DASH_SRC);
+
+                this._player.setAutoPlay(false);
+
+                this._player.attachView(this._videoTag);
 
                 // Set subtitles layer
                 this._player.attachTTMLRenderingDiv(document.querySelector("#subtitles"));
-
             },
 
             /**

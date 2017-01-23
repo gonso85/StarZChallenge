@@ -18,8 +18,6 @@ require.def('starz/appui/application',
                     container.outputElement = appDiv;
                     self.setRootWidget(container);
                 };
-
-                this._language = 'english';
             },
 
             run: function () {
@@ -29,10 +27,6 @@ require.def('starz/appui/application',
 
                 // Create maincontainer and add simple component to it
                 this.addComponentContainer("maincontainer", "starz/appui/components/detail");
-            },
-
-            setLanguage: function (langKey) {
-                this._language = langKey;
             }
         });
     }

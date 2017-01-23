@@ -44,7 +44,7 @@
 
         .content {
             position: relative;
-            top: 50px;
+            top: 70px;
             height: 300px;
             margin-left: @side-edge-margin;
 
@@ -169,9 +169,15 @@
                 text-align: center;
                 margin-top: 30px;
 
-                .binary.button {
+                .button {
+
+                    &+.button {
+                        margin-left: 10px;
+                    }
+
                     display: inline-block;
                     padding: 15px 30px;
+                    min-width: 50px;
 
                     .state {
                         margin-left: 10px;

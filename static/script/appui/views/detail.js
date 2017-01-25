@@ -6,9 +6,9 @@ define('starz/appui/views/detail',
         'antie/widgets/verticallist',
         'antie/widgets/horizontallist',
         'antie/widgets/container',
-        'antie/widgets/button',
         'antie/widgets/label',
         'antie/widgets/image',
+        'starz/appui/widgets/button',
         'starz/appui/widgets/radio',
         'starz/appui/widgets/info',
         'starz/appui/widgets/binarybutton'
@@ -16,9 +16,9 @@ define('starz/appui/views/detail',
     function (VerticalList,
               HorizontalList,
               Container,
-              Button,
               Label,
               Image,
+              Button,
               Radio,
               Info,
               BinaryButton) {
@@ -54,7 +54,8 @@ define('starz/appui/views/detail',
                     playerWrapper,
                     playBtn,
                     videoContainer,
-                    buttonBar;
+                    buttonBar,
+                    overlay;
 
                 this._super('detailView');
 
@@ -75,7 +76,7 @@ define('starz/appui/views/detail',
                 top.appendChildWidget(banner);
 
                 // CENTER PANEL
-                languageSwitch = this._language = this._createRadioButtons();
+                languageSwitch = this._language = this._createLanguageButtons();
                 poster = new Image('poster', POSTER_URL);
                 poster.addClass('poster');
                 movieInfo = this._info = new Info();
@@ -94,9 +95,8 @@ define('starz/appui/views/detail',
                 center.appendChildWidget(languageSwitch);
 
                 // PLAY BUTTON
-                playBtn = this._playBtn = new Button('play');
+                playBtn = this._playBtn = new Button('play', 'WATCH NOW');
                 playBtn.addClass('play');
-                playBtn.appendChildWidget(new Label('WATCH NOW'));
 
                 // PLAYER
                 buttonBar = this._createButtonBar();
@@ -109,11 +109,17 @@ define('starz/appui/views/detail',
                 playerWrapper.appendChildWidget(videoContainer);
                 playerWrapper.appendChildWidget(buttonBar);
 
+                // Loader
+                overlay = this._overlay = new Container('overlay');
+                overlay.addClass('overlay');
+                overlay.appendChildWidget(new Label('Translating...'));
+
                 this.appendChildWidget(top);
                 this.appendChildWidget(error);
                 this.appendChildWidget(center);
                 this.appendChildWidget(playBtn);
                 this.appendChildWidget(playerWrapper);
+                this.appendChildWidget(overlay);
             },
 
             /**
@@ -141,6 +147,24 @@ define('starz/appui/views/detail',
              */
             getPlayButton: function () {
                 return this._playBtn;
+            },
+
+            /**
+             * Get stop button.
+             *
+             * @return {Button} Stop button.
+             */
+            getStopButton: function () {
+                return this._stopBtn;
+            },
+
+            /**
+             * Get subtitle button.
+             *
+             * @return {Button} Subtitle button.
+             */
+            getSubtitleButton: function () {
+                return this._subtitleBtn;
             },
 
             /**
@@ -185,7 +209,7 @@ define('starz/appui/views/detail',
              * @return {RadioButtons} Buttons for language change.
              * @private
              */
-            _createRadioButtons: function () {
+            _createLanguageButtons: function () {
                 var switcher = new Radio('language', [
                     {
                         id: 'english',
@@ -208,17 +232,15 @@ define('starz/appui/views/detail',
              */
             _createButtonBar: function () {
                 var bar = new HorizontalList(),
-                    stop = new Button('stopBtn'),
+                    stop = new Button('stopBtn', 'STOP'),
                     subtitles = new BinaryButton('subtitleBtn', 'Subtitles', false);
 
                 subtitles.addClass('subtitles');
                 stop.addClass('stop');
                 bar.addClass('button-bar');
 
-                stop.appendChildWidget(new Label('STOP'));
-
-                bar.appendChildWidget(subtitles);
-                bar.appendChildWidget(stop);
+                this._subtitleBtn = bar.appendChildWidget(subtitles);
+                this._stopBtn = bar.appendChildWidget(stop);
 
                 return bar;
             },
@@ -250,6 +272,20 @@ define('starz/appui/views/detail',
                     this._playerWrapper.removeClass('display-none');
                 } else {
                     this._playerWrapper.addClass('display-none');
+                }
+            },
+
+            /**
+             * Toggle overlay.
+             *
+             * @param {Boolean} show - True to show the overlay.
+             * @private
+             */
+            _toggleOverlay: function (show) {
+                if (show) {
+                    this._overlay.removeClass('display-none');
+                } else {
+                    this._overlay.addClass('display-none');
                 }
             }
         });

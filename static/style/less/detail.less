@@ -18,7 +18,33 @@
     }
 
     .view {
+        &.arabic {
+            .info, .language.radio {
+                direction: rtl;
+            }
+        }
+
         position: relative;
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0, 0.7);
+
+            .label {
+                display: block;
+                position: relative;
+                top: 40%;
+                margin: auto;
+                height: 100px;
+                color: white;
+                font-size: 40px;
+                width: 100px;
+            }
+        }
 
         .top {
             height: 150px;
@@ -62,14 +88,12 @@
                         border-color: @radio-button-selected-bg-color;
                         background: @radio-button-selected-bg-color;
                         color: black;
-                        font-weight: bold;
                     }
 
                     &.focus {
                         border-color: @radio-button-focused-bg-color;
                         background: @radio-button-focused-bg-color;
                         color: black;
-                        font-weight: none;
                     }
                 }
             }
@@ -182,16 +206,8 @@
                     .state {
                         margin-left: 10px;
                     }
-
-                    &.subtitles {
-                        width: 100px;
-                    }
                 }
             }
-        }
-
-        .arabic {
-            text-align: right;
         }
     }
 }

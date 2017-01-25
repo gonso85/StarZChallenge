@@ -7,7 +7,7 @@
 define(
     'starz/appui/widgets/binarybutton',
     [
-        'antie/widgets/button',
+        'starz/appui/widgets/button',
         'antie/widgets/label'
     ],
     function (Button,
@@ -17,7 +17,7 @@ define(
         var STATES = {
             ON: 'ON',
             OFF: 'OFF'
-            };
+        };
 
         /**
          * Movie info widget.
@@ -27,10 +27,10 @@ define(
              * @constructor
              * @ignore
              */
-            init: function (id, label, defValue) {
+            init: function (id, text, defValue) {
                 var binary;
 
-                this._super(id);
+                this._super(id, text);
                 this.addClass('binary');
 
                 this._state = false;
@@ -38,7 +38,6 @@ define(
                 binary = this._binary = new Label();
                 binary.addClass('state');
 
-                this.appendChildWidget(new Label(label));
                 this.appendChildWidget(binary);
 
                 if (defValue !== undefined) {

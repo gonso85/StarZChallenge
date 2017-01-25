@@ -7,6 +7,7 @@ require.def('starz/appui/components/detail',
         'starz/appui/views/detail',
         'antie/widgets/container',
         'starz/utils',
+        'starz/managers/language',
         'antie/datasource',
         'antie/devices/mediaplayer/mediaplayer',
         'antie/runtimecontext'
@@ -15,11 +16,14 @@ require.def('starz/appui/components/detail',
               View,
               Container,
               Utils,
+              LanguageManager,
               DataSource,
               MediaPlayer,
               RuntimeContext) {
 
-        var device = RuntimeContext.getDevice(),
+        var app = RuntimeContext.getCurrentApplication(),
+            device = RuntimeContext.getDevice(),
+            INFO_URL = 'http://www.omdbapi.com/?t=Elephants+Dream&r=json',
             DASH_SRC = 'http://media.axprod.net/dash/ED_TTML_NEW/Clear/Manifest_sub_in.mpd',
             HLS_SRC = 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d- 8899-f0f6155f6efa.m3u8';
 
@@ -33,6 +37,7 @@ require.def('starz/appui/components/detail',
                 view = this._view = new View();
                 this.appendChildWidget(view);
 
+                this._firstLoad = true;
                 this._top = 0;
 
                 // Create dash player
@@ -53,8 +58,8 @@ require.def('starz/appui/components/detail',
                 this._onSelectBound = Utils.bind(this._onSelect, this);
 
                 // Create binds for other issues
-                this._onOMDSuccessBound = Utils.bind(this._onOMDSuccess, this);
-                this._onOMDErrorBound = Utils.bind(this._onOMDError, this);
+                this._onMovieDataSuccessBound = Utils.bind(this._onMovieDataSuccess, this);
+                this._onMovieDataErrorBound = Utils.bind(this._onMovieDataError, this);
                 this._onCompleteMoveBound = Utils.bind(this._onCompleteMove, this);
 
                 // Add listeners for the lifecycle events
@@ -72,13 +77,10 @@ require.def('starz/appui/components/detail',
             _onBeforeRender: function (evt) {
                 var params = evt.args || {};
 
-                  if (params.language) {
+                this._language = params.language || 'english';
 
-                    // TODO Update text
-
-                } else {
-                    this._view.getLanguageSwitcher().setSelectedButton('english');
-                }
+                // Set default selected language
+                this._view.getLanguageSwitcher().setSelectedButton(this._language);
 
                 // Set non-lifecycle handlers
                 this.addEventListener('select', this._onSelectBound);
@@ -89,15 +91,16 @@ require.def('starz/appui/components/detail',
              *
              * @private
              */
-            _onBeforeShow: function () {
-                var url = 'http://www.omdbapi.com/?t=Elephants+Dream&r=json',
-                    videoContainer = this._view.getVideoWrapper(),
+            _onBeforeShow: function (evt) {
+                var videoContainer = this._view.getVideoWrapper(),
                     error;
+
+                this._view._toggleOverlay(true);
 
                 // Focus the play button
                 this._view.getPlayButton().focus();
 
-                // Show detail sec  tion
+                // Show detail section
                 this._view._toggleDetailVisibility(true);
 
                 // Hide player section
@@ -116,9 +119,9 @@ require.def('starz/appui/components/detail',
                 this._view.getInfo().addClass('display-none');
 
                 // Get movie info
-                device.executeCrossDomainGet(url, {
-                    onSuccess: this._onOMDSuccessBound,
-                    onError: this._onOMDErrorBound
+                device.executeCrossDomainGet(INFO_URL, {
+                    onSuccess: this._onMovieDataSuccessBound,
+                    onError: this._onMovieDataErrorBound
                 });
             },
 
@@ -141,49 +144,56 @@ require.def('starz/appui/components/detail',
              */
             _onSelect: function (evt) {
                 var button = evt.target,
+                    id = button.id,
                     playerSection = this._view.getPlayerSection();
 
-                if (button.id === 'play') {
+                switch(id) {
+                    case 'play':
 
-                    // Show player section
-                    this._view._togglePlayerWrapper(true);
+                        // Show player section
+                        this._view._togglePlayerWrapper(true);
 
-                    // Show the player and begin playback
-                    this.move(playerSection.outputElement, this._onCompleteMoveBound);
+                        // Show the player and begin playback
+                        this._move(playerSection.outputElement, this._onCompleteMoveBound);
 
-                    // Focus controls
-                    this._view.getPlayerSection().focus();
+                        // Focus controls
+                        this._view.getPlayerSection().focus();
+                        break;
 
-                } else if (button.id === 'subtitleBtn') {
-                    button.toggle();
+                    case 'subtitleBtn':
 
-                    // Switch on/off subtitles
-                    if (button.getState()) {
-                        this._player.setTextTrack(0);
-                    } else {
-                        this._player.setTextTrack(-1);
-                    }
-                } else if (button.id === 'stopBtn') {
+                        // Toggle ON/OFF
+                        button.toggle();
 
-                    // Show detail section and hide player
-                    this._view._toggleDetailVisibility(true);
-                    this._view._togglePlayerWrapper(false);
-
-                    // Reset the player
-                    this._player.attachSource(DASH_SRC);
-
-                    this._view.moveTo({
-                        el: this._view.outputElement,
-                        to: {
-                            top: 0
+                        // Switch on/off subtitles
+                        if (button.getState()) {
+                            this._player.setTextTrack(0);
+                        } else {
+                            this._player.setTextTrack(-1);
                         }
-                    });
-                    this._top = 0;
+                        break;
 
-                    this._view.getPlayButton().focus();
-                } else{
+                    case 'stopBtn':
 
-                    // TODO Change language if different
+                        // Reset the view
+                        this._resetView();
+
+                        // Reset the player
+                        this._player.attachSource(DASH_SRC);
+                        break;
+
+                    case 'english':
+                    case 'arabic':
+
+                        // Change language
+                        if (id !== app.getLanguage()) {
+                            app.setLanguage(id);
+
+                            app.pushComponent('maincontainer',
+                                'starz/appui/components/detail',
+                                { language: id});
+                        }
+                        break;
                 }
             },
 
@@ -193,14 +203,24 @@ require.def('starz/appui/components/detail',
              * @param {Object} response - OMD API response.
              * @private
              */
-            _onOMDSuccess: function (response) {
+            _onMovieDataSuccess: function (response) {
                 var info = this._view.getInfo();
 
+                // Set data of the movie
                 info.setData(response);
-
                 info.removeClass('display-none');
 
-                this.getCurrentApplication().ready();
+                // Remove splash screen
+                if (this._firstLoad) {
+                    this.getCurrentApplication().ready();
+                    this._firstLoad = false;
+                }
+
+                // Translate if needed
+                this._updateLanguage(this._language);
+
+                this._view._toggleOverlay(false);
+
             },
 
             /**
@@ -208,7 +228,7 @@ require.def('starz/appui/components/detail',
              *
              * @private
              */
-            _onOMDError: function () {
+            _onMovieDataError: function () {
                 var center = this._view.getCenterPanel(),
                     error = this._view.getErrorLabel();
 
@@ -278,12 +298,84 @@ require.def('starz/appui/components/detail',
             },
 
             /**
+             * Request translations and update the language on the app.
+             *
+             * @param {string} lang - Selected language: english|arabic
+             * @private
+             */
+            _updateLanguage: function (lang) {
+                var path = LanguageManager.getTranslationsPath(lang);
+
+                if (lang === 'arabic') {
+                    this._view.addClass('arabic');
+                } else {
+                    this._view.removeClass('arabic');
+                }
+
+                device.loadURL(path, {
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    },
+                    onLoad: Utils.bind(this._onGetTranslationsSuccess, this)
+                });
+            },
+
+            /**
+             * Handler for getting local translations.
+             *
+             * @param {string} response - Translations.
+             * @private
+             */
+            _onGetTranslationsSuccess: function (response) {
+
+                this._translate(device.decodeJson(response));
+            },
+
+            /**
+             * Translate texts of the page.
+             *
+             * @param {string} translations - Response of the call to resources.
+             * @private
+             */
+            _translate: function (translations) {
+                var view = this._view,
+                    langButtons;
+
+                view.getInfo().setData(translations);
+                view.getPlayButton().setText(translations.watch_now);
+                view.getStopButton().setText(translations.stop);
+                view.getSubtitleButton().setText(translations.subtitles);
+
+                langButtons = view.getLanguageSwitcher().getChildWidgets();
+                langButtons[0].setText(translations.Language);
+                langButtons[1].setText(translations.arabic);
+            },
+
+            /**
+             * Reset the view.
+             *
+             * @private
+             */
+            _resetView: function () {
+                this._view._toggleDetailVisibility(true);
+                this._view._togglePlayerWrapper(false);
+                this._view.getPlayButton().focus();
+                this._view.moveTo({
+                    el: this._view.outputElement,
+                    to: {
+                        top: 0
+                    }
+                });
+                this._top = 0;
+            },
+
+            /**
              * Aligns the component based on the given item.
              *
              * @param {HTMLElement} item - The item.
              * @param {function} callback - Callback to call after animation.
              */
-            move: function (item, callback) {
+            _move: function (item, callback) {
                 var dimensions,
                     listTop = this._top || 0,
                     perfectTop,

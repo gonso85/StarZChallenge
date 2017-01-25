@@ -22,19 +22,6 @@ define(
              * @ignore
              */
             init: function (id) {
-                this._super(id);
-
-                this.addClass('info');
-
-                this._build();
-            },
-
-            /**
-             * Creation of the widgets.
-             *
-             * @private
-             */
-            _build: function () {
                 var titleRow = new Container(),
                     row1 = new Container(),
                     row2 = new Container(),
@@ -47,6 +34,10 @@ define(
                     plot = this._plot = new Label(),
                     language = this._language = new Label(),
                     country = this._country = new Label();
+
+                this._super(id);
+
+                this.addClass('info');
 
                 titleRow.addClass('info-row');
 
@@ -80,14 +71,14 @@ define(
              * @param {Object} data - Info provided by the API.
              */
             setData: function (data) {
-                this._title.setText(data.Title || '');
-                this._year.setText(data.Year || '');
-                this._runtime.setText(data.Runtime || '');
-                this._genre.setText(data.Genre || '');
-                this._rating.setText(data.imdbRating || '');
-                this._plot.setText(data.Plot || '');
-                this._language.setText(data.Language || '');
-                this._country.setText(data.Country || '');
+                data.Title && this._title.setText(data.Title);
+                data.Year && this._year.setText(data.Year);
+                data.Runtime && this._runtime.setText(data.Runtime);
+                data.Genre && this._genre.setText(data.Genre);
+                data.imdbRating && this._rating.setText(data.imdbRating);
+                data.Plot && this._plot.setText(data.Plot);
+                data.Language && this._language.setText(data.Language);
+                data.Country && this._country.setText(data.Country);
             }
         });
     });

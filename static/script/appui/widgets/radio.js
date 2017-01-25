@@ -7,13 +7,13 @@ define(
     'starz/appui/widgets/radio',
     [
         'antie/widgets/horizontallist',
-        'antie/widgets/button',
         'antie/widgets/label',
+        'starz/appui/widgets/button',
         'starz/utils'
     ],
     function (HorizontalList,
-              Button,
               Label,
+              Button,
               Utils) {
         'use strict';
 
@@ -89,18 +89,14 @@ define(
             setButtons: function (data) {
                 var i = 0,
                     buttonData,
-                    label,
                     button;
 
                 for (; i < data.length; i++) {
                     buttonData = data[i];
 
-                    label = new Label(buttonData.title);
-
-                    button = new Button(buttonData.id);
+                    button = new Button(buttonData.id, buttonData.title);
                     button.addClass('radio');
                     button.setDataItem(buttonData.data);
-                    button.appendChildWidget(label);
 
                     this.appendChildWidget(button);
                 }

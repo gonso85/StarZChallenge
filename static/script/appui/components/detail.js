@@ -8,8 +8,7 @@ require.def('starz/appui/components/detail',
         'antie/widgets/container',
         'starz/utils',
         'starz/managers/language',
-        'antie/datasource',
-        'antie/devices/mediaplayer/mediaplayer',
+        'starz/managers/player',
         'antie/runtimecontext'
     ],
     function (Component,
@@ -17,15 +16,13 @@ require.def('starz/appui/components/detail',
               Container,
               Utils,
               LanguageManager,
-              DataSource,
-              MediaPlayer,
+              PlayerManager,
               RuntimeContext) {
 
         var app = RuntimeContext.getCurrentApplication(),
             device = RuntimeContext.getDevice(),
             INFO_URL = 'http://www.omdbapi.com/?t=Elephants+Dream&r=json',
-            DASH_SRC = 'http://media.axprod.net/dash/ED_TTML_NEW/Clear/Manifest_sub_in.mpd',
-            HLS_SRC = 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d- 8899-f0f6155f6efa.m3u8';
+            videoUrl;
 
         // All components extend Component
         return Component.extend({
@@ -40,14 +37,8 @@ require.def('starz/appui/components/detail',
                 this._firstLoad = true;
                 this._top = 0;
 
-                // Create dash player
-                this._player = dashjs.MediaPlayer().create();
-
-                // Init the player (first of all)
-                this._player.initialize();
-
-                // Disable player logger
-                this._player.getDebug().setLogToBrowserConsole(false);
+                // Get the player by browser
+                this._player = new PlayerManager().getPlayer();
 
                 // Create binds callbacks for lifecycle events
                 this._onBeforeRenderBound = Utils.bind(this._onBeforeRender, this);
@@ -91,9 +82,8 @@ require.def('starz/appui/components/detail',
              *
              * @private
              */
-            _onBeforeShow: function (evt) {
-                var videoContainer = this._view.getVideoWrapper(),
-                    error;
+            _onBeforeShow: function () {
+                var error;
 
                 this._view._toggleOverlay(true);
 
@@ -106,9 +96,6 @@ require.def('starz/appui/components/detail',
                 // Hide player section
                 this._view._togglePlayerWrapper(false);
 
-                // Append the player
-                this._appendVideoPlayer(videoContainer);
-
                 // Set up the player
                 this._prepareVideoPlayer();
 
@@ -116,6 +103,7 @@ require.def('starz/appui/components/detail',
                 error = this._view.getErrorLabel();
                 error.addClass('display-none');
 
+                // Hide info panel util load
                 this._view.getInfo().addClass('display-none');
 
                 // Get movie info
@@ -128,10 +116,9 @@ require.def('starz/appui/components/detail',
             /**
              * On before hide handler.
              *
-             * @param {Event} evt - On before hide event.
              * @private
              */
-            _onBeforeHide: function (evt) {
+            _onBeforeHide: function () {
 
                 this.removeEventListener('select', this._onSelectBound);
             },
@@ -166,11 +153,7 @@ require.def('starz/appui/components/detail',
                         button.toggle();
 
                         // Switch on/off subtitles
-                        if (button.getState()) {
-                            this._player.setTextTrack(0);
-                        } else {
-                            this._player.setTextTrack(-1);
-                        }
+                        this._player.toggleSubtitles(button.getState());
                         break;
 
                     case 'stopBtn':
@@ -179,13 +162,13 @@ require.def('starz/appui/components/detail',
                         this._resetView();
 
                         // Reset the player
-                        this._player.attachSource(DASH_SRC);
+                        this._player.loadSource(videoUrl);
                         break;
 
                     case 'english':
                     case 'arabic':
 
-                        // Change language
+                        // Reload to change language
                         if (id !== app.getLanguage()) {
                             app.setLanguage(id);
 
@@ -219,6 +202,7 @@ require.def('starz/appui/components/detail',
                 // Translate if needed
                 this._updateLanguage(this._language);
 
+                // Hide loading overlay
                 this._view._toggleOverlay(false);
 
             },
@@ -255,46 +239,33 @@ require.def('starz/appui/components/detail',
                 this._player.play();
 
                 // Disable subtitles (only after play)
-                this._player.setTextTrack(-1);
+                this._player.toggleSubtitles(false);
             },
 
             /**
-             * Instantiates a dash video player and append it to the page.
+             * Append the player to the page.
              *
              * @param {Container} container - Container for the player.
              * @private
              */
             _appendVideoPlayer: function (container) {
-                var playerEl = container.outputElement,
-                    videoEl,
-                    subsEl;
 
-                if (playerEl && !playerEl.children.length) {
-                    videoEl = this._videoTag = device._createElement('video', 'videoPlayer', ['player']);
-                    // videoEl.setAttribute('controls', true);
-                    device.appendChildElement(container.outputElement, videoEl);
-
-                    // container.appendChildWidget(new Container('subtitles'));
-                    subsEl = device._createElement('div', 'subtitles', ['subtitles']);
-                    device.appendChildElement(container.outputElement, subsEl);
-                }
+                return this._player.createVideoPlayer(container);
             },
 
             /**
-             * Init the dash video player.
+             * Init the video player.
              *
              * @private
              */
             _prepareVideoPlayer: function () {
+                var videoContainer = this._view.getVideoWrapper();
 
-                this._player.attachSource(DASH_SRC);
+                // Append the player
+                this._appendVideoPlayer(videoContainer);
 
-                this._player.setAutoPlay(false);
-
-                this._player.attachView(this._videoTag);
-
-                // Set subtitles layer
-                this._player.attachTTMLRenderingDiv(document.querySelector("#subtitles"));
+                // Prepare video player
+                this._player.prepare();
             },
 
             /**

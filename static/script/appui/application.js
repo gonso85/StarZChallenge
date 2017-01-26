@@ -20,6 +20,7 @@ require.def('starz/appui/application',
                 };
 
                 this._language = 'english';
+
             },
 
             run: function () {

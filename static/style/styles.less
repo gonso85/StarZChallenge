@@ -1,3 +1,68 @@
+@import 'less/colors.less';
+@import 'less/detail.less';
+@import 'less/info.less';
+
+@top-edge-margin: 30px;
+@side-edge-margin: 60px;
+
 body {
-    background: yellow !important;
+    font-family: Helvetica;
+    font-size: 16px;
+
+    overflow: hidden;
+    background: rgba(0, 0, 0, .9);
+    margin: 0;
+
+    &.arabic {
+        .label {
+            text-align: right;
+        }
+    }
+
+    .helper {
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+
+    .splash-screen {
+        position: relative;
+        z-index: 10;
+        height: 720px;
+        width: 100%;
+        background: white;
+        white-space: nowrap;
+        text-align: center;
+
+        img {
+            vertical-align: middle;
+        }
+    }
+
+    .display-none {
+        display: none !important;
+    }
+
+    .visibility-hidden {
+        visibility: hidden !important;
+    }
+
+    .button {
+        color: white;
+        background: transparent;
+        border: 2px solid white;
+        text-align: center;
+
+        &.focus {
+            border-color: @radio-button-focused-bg-color;
+            background: @radio-button-focused-bg-color;
+            color: black;
+        }
+
+        &.binary {
+            .status {
+                padding-left: 15px;
+            }
+        }
+    }
 }
